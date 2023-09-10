@@ -91,6 +91,22 @@ describe('getAndExecuteQuote function', () => {
         expect(result).toBe("Received an FxError: Some error message");
     });
 
+    test('error during quote execution', async () => {
+        mockFalconxClient.getQuote.mockResolvedValue(undefined);
+
+        const result = await getAndExecuteQuote(
+            mockFalconxClient,
+            "BUY",
+            "ETH",
+            "USD",
+            0.1,
+            294.0,
+            true
+        );
+
+        expect(result).toContain("Invalid quote received from Falconx:");
+    });
+
     test('error during order execution', async () => {
         mockFalconxClient.getQuote.mockResolvedValue(getQuoteExample);
         mockFalconxClient.executeQuote.mockRejectedValue(new Error("Execution error"));

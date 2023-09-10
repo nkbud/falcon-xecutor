@@ -1,4 +1,3 @@
-
 /**
  * Interacts with Falconx to get a quote and optionally execute it
  *

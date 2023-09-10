@@ -8,7 +8,7 @@ const {text} = require("express");
 app.use(text());
 
 // custom helper functions
-const {authenticate, getSignature} = require('./lib/auth')
+const {authenticate, getSignaturePath} = require('./lib/auth')
 const {parseOrder, FalconxOrder} = require('./lib/parseOrder')
 const {getAndExecuteQuote} = require('./lib/falconx')
 
@@ -26,7 +26,7 @@ app.get("/health", (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.send(getSignature());
+    res.sendFile(getSignaturePath());
 });
 
 // POST
@@ -42,6 +42,7 @@ app.post('/', async (req, res) => {
         // Authenticate request
         const authError = authenticate(ipAddr, reqBody);
         if (authError) {
+            console.error(authError);
             return res.status(401).send();
         }
 
@@ -51,12 +52,29 @@ app.post('/', async (req, res) => {
             console.error(`Error parsing the request body: ${parsedOrder}`);
             return res.status(400).send()
         }
-        await getAndExecuteQuote(parsedOrder);
+
+        // Get and execute a quote:
+        const falconxError = await getAndExecuteQuote(
+            fxClient,
+            parsedOrder.buyOrSell,
+            parsedOrder.baseToken,
+            parsedOrder.quoteToken,
+            parsedOrder.baseTokenAmount,
+            parsedOrder.quoteTokenPrice,
+            false,
+        );
+        if (falconxError) {
+            console.error(falconxError);
+            return res.status(500).send();
+        }
 
     } catch (error) {
         console.error(`Server error processing request: ${error}`);
         return res.status(500).send('Internal server error.');
     }
+
+    console.log("Request success.")
+    return res.status(200).send();
 });
 
 app.listen(PORT, () => {

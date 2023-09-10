@@ -16,6 +16,9 @@ const signature = fs.readFileSync(signatureFilePath, 'utf8');
 function getSignature() {
     return signature;
 }
+function getSignaturePath() {
+    return signatureFilePath;
+}
 /**
  * Authenticates a request based on IP address and request body signature.
  *
@@ -52,5 +55,6 @@ function authenticate(ipAddr, reqBodyText) {
 
 module.exports = {
     authenticate,
-    getSignature
+    getSignature,
+    getSignaturePath
 }
