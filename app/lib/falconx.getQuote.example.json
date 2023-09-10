@@ -1,0 +1,22 @@
+{
+  "buy_price": 294.0,
+  "error": null,
+  "fx_quote_id": "fad0ac687b1e439a92a0bafd92441e48",
+  "is_filled": true,
+  "price_executed": 294.0,
+  "quantity_requested": {
+    "token": "ETH",
+    "value": "0.10000"
+  },
+  "sell_price": 293.94,
+  "side_executed": "buy",
+  "side_requested": "two_way",
+  "status": "success",
+  "t_execute": "2019-07-03T21:45:10.358335+00:00",
+  "t_expiry": "2019-07-03T21:45:17.198692+00:00",
+  "t_quote": "2019-07-03T21:45:07.198688+00:00",
+  "token_pair": {
+    "base_token": "ETH",
+    "quote_token": "USD"
+  }
+}
