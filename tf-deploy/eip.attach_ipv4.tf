@@ -5,7 +5,7 @@ resource "aws_eip" "x" {
   associate_with_private_ip = aws_instance.x.private_ip
 
   tags = {
-    Name: var.app_name
+    Name : var.app_name
   }
 }
 

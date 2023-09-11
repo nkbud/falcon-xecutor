@@ -3,7 +3,7 @@ resource "aws_instance" "x" {
     Name = var.app_name
   }
 
-  ami           = "ami-06531f5aac8d61d16"
+  ami = "ami-06531f5aac8d61d16"
   # ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server-20230829-8bb3c36c-1075-40ef-adf8-e9bcd0ccb212
 
   instance_type = "t4g.nano"
@@ -48,7 +48,7 @@ resource "aws_instance" "x" {
     delete_on_termination = true
   }
   volume_tags = {
-    Name: var.app_name
+    Name : var.app_name
   }
   # our 8GB root volume
 }

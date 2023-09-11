@@ -13,7 +13,7 @@ resource "aws_iam_policy" "x" {
 
       # get its files from the s3 bucket
       {
-        Action   = [
+        Action = [
           "s3:ListBucket",
           "s3:GetBucketLocation"
         ],
@@ -21,7 +21,7 @@ resource "aws_iam_policy" "x" {
         Resource = "arn:aws:s3:::build-artifacts-0",
       },
       {
-        Action   = [
+        Action = [
           "s3:GetObject",
         ],
         Effect   = "Allow",
