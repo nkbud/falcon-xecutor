@@ -4,6 +4,7 @@
 wait_for_http() {
   PORT=$1
   counter=0
+  echo "testing curl localhost:$PORT/health"
   while true; do
     response=$(curl -k -o /dev/null -s -w "%{http_code}" "localhost:$PORT/health")
     if [ "$response" -eq 200 ]; then
