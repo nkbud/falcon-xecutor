@@ -17,6 +17,10 @@ resource "aws_iam_role" "x" {
   EOF
 }
 
+resource "aws_iam_role_policy_attachment" "y" {
+  role       = aws_iam_role.x.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
 resource "aws_iam_role_policy_attachment" "x" {
   role       = aws_iam_role.x.name
   policy_arn = aws_iam_policy.x.arn

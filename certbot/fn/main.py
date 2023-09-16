@@ -6,7 +6,7 @@ from acme import challenges
 
 BUCKET_NAME    = os.environ['S3_BUCKET_NAME']
 OBJECT_KEY     = os.environ['S3_OBJECT_KEY']
-ZONE_ID = os.environ['ZONE_ID']
+ZONE_ID        = os.environ['ZONE_ID']
 DOMAIN_NAME    = os.environ['DOMAIN_NAME']
 ACME_KEY       = os.environ['ACME_KEY']
 
@@ -22,7 +22,7 @@ def handler(event, context):
     # Register account
     regr = acme_client.new_account(
         messages.NewRegistration.from_data(
-            email="your_email@example.com",
+            email="nicholasbudzban@gmail.com",
             terms_of_service_agreed=True
         )
     )
@@ -78,3 +78,4 @@ def handler(event, context):
         'statusCode': 200,
         'body': 'Certificate obtained and saved to S3!'
     }
+

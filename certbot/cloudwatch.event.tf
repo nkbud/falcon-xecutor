@@ -1,7 +1,4 @@
 
-# the first invocation
-# |
-# the subsequent invocations
 resource "aws_cloudwatch_event_rule" "x" {
   name                = "${var.app_name}-every-7-days"
   description         = "Fires ${var.app_name} every 7 days"
