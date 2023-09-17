@@ -10,7 +10,7 @@
         "start": "node app.js"
     },
     "dependencies": {
-        "@jest/globals": "^29.6.4",
+        "@jest/globals": "29.6.4",
         "express": "4.18.2",
         "falconx-node": "1.0.3",
         "newrelic": "11.1.0"

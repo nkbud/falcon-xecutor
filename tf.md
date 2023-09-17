@@ -1,11 +1,26 @@
-# Initial deployment
-
-1. terraform apply "certbot"
-2. terraform apply "v0.1.0"
-3. terraform apply "upgrade"
-
 # Upgrades
 
-1. terraform apply "v0.2.0"
-2. terraform apply "upgrade"
-3. terraform destroy "v0.1.0"
+```
+still just a rough idea
+```
+
+1. give it the s3 credentials
+
+
+
+
+# You can use docker
+
+```
+# change this to deploy another tf
+export TF_DIR=infra
+
+docker build \
+  -f ./tf.Dockerfile \
+  --build-arg TF_DIR=$TF_DIR \
+  -t terraform-runner .
+  
+docker run \
+  --env-file infra/.env \
+  terraform-runner
+```

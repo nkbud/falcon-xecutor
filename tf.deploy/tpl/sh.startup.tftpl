@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+#
+# install dependencies
+#
+
+time sudo apt-get update
+time sudo apt install docker.io docker-compose unzip -y
+sudo snap install aws-cli --classic
+
+#
+# run startup sequence
+#
+
+${startup_aws}
+
+${startup_app}
+
+${startup_nginx}

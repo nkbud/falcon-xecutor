@@ -16,9 +16,10 @@ resource "aws_lightsail_instance_public_ports" "x" {
     from_port = 443
     to_port   = 443
   }
-  # remove this when you want to apply changes.
-  # this resource always 'must be replaced', otherwise.
-  #  lifecycle {
-  #    ignore_changes = all
-  #  }
+  lifecycle {
+    ignore_changes = all
+  }
+  # this resource doesn't behave well
+  # it keeps wanting to replace itself
+  # remove this block if you actually want it to be replaced
 }
