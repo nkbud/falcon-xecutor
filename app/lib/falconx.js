@@ -46,14 +46,13 @@ async function getAndExecuteQuote(
   }
 
   try {
-    // Get the quote.
     const quote = await falconxClient.getQuote(
         baseToken,
         quoteToken,
         baseTokenAmount,
-        buyOrSell
+        buyOrSell.toLowerCase()
     );
-    console.info(quote);
+    console.info("Received the following quote: ", quote);
 
     // Check if the quote is valid.
     if (!quote || typeof quote !== 'object') {
@@ -69,7 +68,8 @@ async function getAndExecuteQuote(
     }
     // If the caller opts out of execution, log and return.
     if (!doExecute) {
-      return "Function caller opted-out of order execution.";
+      console.info("Function caller opted-out of order execution.")
+      return "";
     }
 
     // Execute the order.
@@ -77,10 +77,10 @@ async function getAndExecuteQuote(
         quote.fx_quote_id,
         buyOrSell
     );
-    console.info(executedQuote);
+    console.info("Executed the quote successfully: ", executedQuote);
 
   } catch (error) {
-    return `Unknown error during falconx interaction: ${error}`;
+    return `Unknown error during falconx interaction: ${error.message}`;
   }
 
   // empty string means no error

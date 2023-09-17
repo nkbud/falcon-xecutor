@@ -13,7 +13,7 @@ const allowedIpAddrs = [
 ];
 
 // and ends with the signature
-const signatureFilePath = path.join(__dirname, 'web/index.html');
+const signatureFilePath = path.join(__dirname, 'index.html');
 const signature = fs.readFileSync(signatureFilePath, 'utf8');
 function getSignature() {
     return signature;

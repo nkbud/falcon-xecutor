@@ -20,7 +20,7 @@ describe('parse function', () => {
     test('parses a valid request', () => {
         // BUY
         let validInput = '' +
-            'exec: BUY\nbase: BTC 0.0001\nquote: USD 30000'
+            'BUY\n0.0001 BTC\n30000 USD'
         let expectedParse = new FalconxOrder(
             "BUY",
             "BTC",
@@ -33,7 +33,7 @@ describe('parse function', () => {
 
         // SELL
         validInput = '' +
-            'exec: SELL\nbase: BTC 1\nquote: USD 0.01'
+            'SELL\n1 BTC\n0.01 USD'
         expectedParse = new FalconxOrder(
             "SELL",
             "BTC",
@@ -48,67 +48,55 @@ describe('parse function', () => {
     test('returns error on invalid request', () => {
         // NOT 3 LINES
         let invalidInput = '' +
-            'exec: BUY base: BTC 0.0001 quote: USD 30000'
+            'BUY 1 BTC 0.0001 USD'
         let actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // NO EXEC ACTION
         invalidInput = '' +
-            'exec: \nbase: BTC 0.0001\nquote: USD 30000'
+            '0.0001 BTC\n30000 USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // BAD EXEC KEY
         invalidInput = '' +
-            'exe: IDK\nbase: BTC 0.0001\nquote: USD 30000'
+            'IDK\n0.001 BTC\n3000.1 USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // NO BASE TOKEN
         invalidInput = '' +
-            'exec: \nbase: 0.0001\nquote: USD 30000'
+            'BUY\n0.0001\n30000 USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // NO BASE AMOUNT
         invalidInput = '' +
-            'exec: BUY\nbase: BTC\nquote: USD 30000'
-        actualParse = parseOrder(invalidInput);
-        expect(typeof(actualParse)).toBe('string');
-
-        // NO BASE TOKEN
-        invalidInput = '' +
-            'exec: BUY\nbase: 0.0001\nquote: USD 30000'
-        actualParse = parseOrder(invalidInput);
-        expect(typeof(actualParse)).toBe('string');
-
-        // NO BASE AMOUNT
-        invalidInput = '' +
-            'exec: SELL\nbase: BTC\nquote: USD 30000'
+            'BUY\nBTC\n30000 USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // BAD BASE AMOUNT
         invalidInput = '' +
-            'exec: SELL\nbase: BTC idk\nquote: USD 30000'
+            'SELL\nidk BTC\n30000 USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // NO QUOTE TOKEN
         invalidInput = '' +
-            'exec: BUY\nbase: BTC 0.0001\nquote: 30000'
+            'BUY\n0.0001 BTC\n30000 '
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // NO QUOTE PRICE
         invalidInput = '' +
-            'exec: SELL\nbase: BTC 0.0001\nquote: USD'
+            'SELL\n0.1 BTC\n USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
 
         // BAD QUOTE PRICE
         invalidInput = '' +
-            'exec: SELL\nbase: BTC 0.0001\nquote: USD idk'
+            'SELL\n0.1 BTC\nidk USD'
         actualParse = parseOrder(invalidInput);
         expect(typeof(actualParse)).toBe('string');
     });

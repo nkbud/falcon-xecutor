@@ -43,17 +43,17 @@ class FalconxOrder {
 function parseOrder(text) {
 
     // HAS AT LEAST 3 LINES
-    const lines = text.split('\n');
+    const lines = text.split(/\r?\n/);
     if (lines.length < 3) {
         return `Failed to split the text into 3+ lines: ${lines}`
     }
 
     // CAN PARSE FIRST 3 LINES
-    const execMatch = lines[0].match(/^exec: (BUY|SELL)$/);
-    const baseMatch = lines[1].match(/^base: (\w+) (.+)$/);
-    const quoteMatch = lines[2].match(/^quote: (\w+) (.+)$/);
+    const execMatch = lines[0].match(/^(BUY|SELL)$/);
+    const baseMatch = lines[1].match(/^(\d+(?:\.\d+)?) (\w+)$/);
+    const quoteMatch = lines[2].match(/^(\d+(?:\.\d+)?) (\w+)$/);
     if (!execMatch) {
-        return `Failed to parse exec: (BUY|SELL) from first line: ${lines[0]}`
+        return `Failed to parse (BUY|SELL) from first line: ${lines[0]}`
     }
     if (!baseMatch) {
         return `Failed to parse the base token and amount from second line: ${lines[1]}`
@@ -64,15 +64,15 @@ function parseOrder(text) {
 
     // EXTRACT AND PARSE INFO
     const buyOrSell = execMatch[1];
-    const baseToken = baseMatch[1];
-    const quoteToken = quoteMatch[1];
-    const baseTokenAmount = parseFloat(baseMatch[2]);
-    const quoteTokenPrice = parseFloat(quoteMatch[2]);
+    const baseToken = baseMatch[2];
+    const quoteToken = quoteMatch[2];
+    const baseTokenAmount = parseFloat(baseMatch[1]);
+    const quoteTokenPrice = parseFloat(quoteMatch[1]);
     if (isNaN(baseTokenAmount)) {
-        return `The parsed base token amount is not a valid number: ${baseToken[2]}`
+        return `The parsed base token amount is not a valid number: ${baseToken[1]}`
     }
     if (isNaN(quoteTokenPrice)) {
-        return `The parsed quote token price is not a valid number: ${quoteMatch[2]}`
+        return `The parsed quote token price is not a valid number: ${quoteMatch[1]}`
     }
 
     // RETURN OBJECT
@@ -83,7 +83,7 @@ function parseOrder(text) {
         baseTokenAmount,
         quoteTokenPrice
     )
-    console.log(order);
+    console.log("Parsed the following order: ", order);
     return order;
 }
 

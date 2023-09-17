@@ -1,4 +1,5 @@
 // a server
+const path = require('path');
 const express = require('express');
 const app = express();
 const PORT = 1000;
