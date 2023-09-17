@@ -16,6 +16,12 @@ variable "falconx_passphrase" {
 variable "falconx_secret_key" {
   sensitive = true
 }
+variable "iam_access_key" {
+  sensitive = true
+}
+variable "iam_secret_key" {
+  sensitive = true
+}
 
 #
 # outputs

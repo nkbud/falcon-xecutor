@@ -1,6 +1,6 @@
 
 resource "aws_s3_bucket" "x" {
-  bucket = "falcon-xecutor"
+  bucket        = "falcon-xecutor"
   force_destroy = true
 }
 

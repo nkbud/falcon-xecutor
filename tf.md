@@ -1,9 +1,11 @@
 # Upgrades
 
 ```
-still just a rough idea
+terraform taint module.upgrade.aws_lightsail_static_ip_attachment.x
 ```
 
+
+terraform taint 
 1. give it the s3 credentials
 
 
@@ -24,3 +26,4 @@ docker run \
   --env-file infra/.env \
   terraform-runner
 ```
+

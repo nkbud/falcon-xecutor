@@ -26,3 +26,15 @@ output "bucket_name" {
 output "bucket_arn" {
   value = aws_s3_bucket.x.arn
 }
+
+output "iam_user_arn" {
+  value = aws_iam_user.x.arn
+}
+output "iam_access_key" {
+  sensitive = true
+  value     = aws_iam_access_key.x.id
+}
+output "iam_secret_key" {
+  sensitive = true
+  value     = aws_iam_access_key.x.secret
+}

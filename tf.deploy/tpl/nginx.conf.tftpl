@@ -2,10 +2,10 @@ server {
     listen 443 ssl;
     server_name ${server_name};
 
-    ssl_certificate ${path_to_cert_in_container};
+    ssl_certificate ${path_to_certificate_in_container};
     # This cert is sent to clients during the SSL/TLS handshake to say we're authentic
 
-    ssl_certificate_key ${path_to_cert_key_in_container};
+    ssl_certificate_key ${path_to_private_key_in_container};
     # This private key is used by the server to
     # - decrypt data encrypted with the public key by clients
     # - sign data to prove its authenticity to clients.
@@ -14,5 +14,13 @@ server {
         proxy_pass http://app:${app_port};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+server {
+    listen 80;
+    server_name noreply.cryptopantheon.info;
+    location / {
+        return 301 https://$host$request_uri;
     }
 }

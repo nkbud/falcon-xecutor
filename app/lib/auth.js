@@ -7,11 +7,13 @@ const allowedIpAddrs = [
     "52.89.214.238",
     "34.212.75.30",
     "54.218.53.128",
-    "52.32.178.7"
+    "52.32.178.7",
+    // me
+    "96.35.0.217",
 ];
 
 // and ends with the signature
-const signatureFilePath = path.join(__dirname, 'index.html');
+const signatureFilePath = path.join(__dirname, 'web/index.html');
 const signature = fs.readFileSync(signatureFilePath, 'utf8');
 function getSignature() {
     return signature;

@@ -1,0 +1,76 @@
+#!/bin/bash
+set -e
+
+#
+# install dependencies
+#
+
+time sudo apt-get update
+time sudo apt install docker.io docker-compose unzip -y
+sudo snap install aws-cli --classic
+
+#
+# configure aws
+#
+
+mkdir -p ${user_dir}/.aws
+
+cat << EOF > ${user_dir}/.aws/credentials
+[default]
+aws_access_key_id = ${aws_access_key_id}
+aws_secret_access_key = ${aws_secret_access_key}
+EOF
+
+cat << EOF > ${user_dir}/.aws/config
+[default]
+aws_region = ${aws_region}
+EOF
+
+#
+# download from s3
+#
+
+sudo -u ubuntu \
+  aws s3api get-object \
+  --bucket ${bucket_name} \
+  --key ${app_object_key} \
+  ${path_to_app_zip_on_host}
+
+sudo -u ubuntu \
+  aws s3api get-object \
+  --bucket ${bucket_name} \
+  --key ${ssl_certificate_object_key} \
+  ${path_to_certificate_on_host}
+
+sudo -u ubuntu \
+  aws s3api get-object \
+  --bucket ${bucket_name} \
+  --key ${ssl_private_key_object_key} \
+  ${path_to_private_key_on_host}
+
+sudo -u ubuntu \
+  aws s3api get-object \
+  --bucket ${bucket_name} \
+  --key ${compose_object_key} \
+  ${path_to_compose_on_host}
+
+sudo -u ubuntu \
+  aws s3api get-object \
+  --bucket ${bucket_name} \
+  --key ${nginx_object_key} \
+  ${path_to_nginx_on_host}
+
+#
+# unzip app
+#
+
+unzip ${path_to_app_zip_on_host} -d ${path_to_app_dir_on_host}/
+
+#
+# docker compose
+#
+
+cd $(dirname ${path_to_compose_on_host}) && sudo docker-compose up
+
+# change any part of this script to trigger a redeploy, i.e.
+echo "e"

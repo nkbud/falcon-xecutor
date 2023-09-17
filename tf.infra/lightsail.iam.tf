@@ -29,7 +29,7 @@ resource "aws_iam_policy" "s3" {
           "s3:ListBucket",
           "s3:GetBucketLocation"
         ],
-        Resource = "arn:aws:s3:::falcon-xecutor"
+        Resource = aws_s3_bucket.x.arn
       },
       {
         Effect = "Allow",
@@ -37,7 +37,7 @@ resource "aws_iam_policy" "s3" {
           "s3:GetObject",
           "s3:HeadObject"
         ],
-        Resource = "arn:aws:s3:::falcon-xecutor/*"
+        Resource = "${aws_s3_bucket.x.arn}/*"
       }
     ]
   })

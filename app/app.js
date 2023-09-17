@@ -4,8 +4,7 @@ const app = express();
 const PORT = 1000;
 
 // that handles plaintext request bodies
-const {text} = require("express");
-app.use(text());
+app.use(express.text());
 
 // custom helper functions
 const {authenticate, getSignaturePath} = require('./lib/auth')
@@ -29,21 +28,21 @@ app.get('/', (req, res) => {
     res.sendFile(getSignaturePath());
 });
 
+app.use('/img', express.static(path.join(__dirname, 'img')));
+
 // POST
 const nginxIpAddrHeader = 'X-Real-IP';
 app.post('/', async (req, res) => {
     try {
         // Extract and log info
         const reqBody = req.body
-        console.log(reqBody)
         const ipAddr = req.header(nginxIpAddrHeader)
-        console.log(ipAddr)
 
         // Authenticate request
         const authError = authenticate(ipAddr, reqBody);
         if (authError) {
             console.error(authError);
-            return res.status(401).send();
+            return res.status(401).send(authError);
         }
 
         // Parse request

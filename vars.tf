@@ -2,9 +2,9 @@
 # inputs
 #
 
-variable "aws_region" { }
-variable "dns_domain" { }
-variable "dns_record" { }
+variable "aws_region" {}
+variable "dns_domain" {}
+variable "dns_record" {}
 variable "falconx_api_key" {
   sensitive = true
 }
