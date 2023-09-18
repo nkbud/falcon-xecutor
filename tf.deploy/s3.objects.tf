@@ -4,12 +4,12 @@
 
 resource "aws_s3_object" "ssl_private_key" {
   bucket  = var.bucket_name
-  key     = "ssl_private_key.pem"
+  key     = "${var.app_version}/selfsigned_privkey.pem"
   content = tls_private_key.x.private_key_pem
 }
 resource "aws_s3_object" "ssl_cert" {
   bucket  = var.bucket_name
-  key     = "ssl_certificate.pem"
+  key     = "${var.app_version}/selfsigned_certificate.pem"
   content = tls_self_signed_cert.x.cert_pem
 }
 
@@ -19,7 +19,7 @@ resource "aws_s3_object" "ssl_cert" {
 
 resource "aws_s3_object" "nginx" {
   bucket  = var.bucket_name
-  key     = "nginx.conf"
+  key     = "${var.app_version}/nginx.conf"
   content = local_sensitive_file.nginx.content
 }
 
@@ -29,7 +29,7 @@ resource "aws_s3_object" "nginx" {
 
 resource "aws_s3_object" "compose" {
   bucket  = var.bucket_name
-  key     = "compose.yml"
+  key     = "${var.app_version}/compose.yml"
   content = local_sensitive_file.compose.content
 }
 
@@ -39,7 +39,7 @@ resource "aws_s3_object" "compose" {
 
 resource "aws_s3_object" "app" {
   bucket = var.bucket_name
-  key    = "app.zip"
+  key    = "${var.app_version}/app.zip"
   source = data.archive_file.app.output_path
   etag   = data.archive_file.app.output_md5
 }

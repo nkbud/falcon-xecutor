@@ -1,24 +1,24 @@
 
 resource "local_sensitive_file" "startup" {
-  filename = "${path.module}/out/startup.sh"
+  filename = "${path.module}/out/${var.app_version}/startup.sh"
   content = templatefile(
-    "${path.module}/tpl/startup.sh.tftpl",
+    "${path.module}/tpl/${var.app_version}/startup.sh.tftpl",
     local.startup_vars
   )
 }
 
 resource "local_sensitive_file" "nginx" {
-  filename = "${path.module}/out/nginx.conf"
+  filename = "${path.module}/out/${var.app_version}/nginx.conf"
   content = templatefile(
-    "${path.module}/tpl/nginx.conf.tftpl",
+    "${path.module}/tpl/${var.app_version}/nginx.conf.tftpl",
     local.nginx_vars
   )
 }
 
 resource "local_sensitive_file" "compose" {
-  filename = "${path.module}/out/compose.yml"
+  filename = "${path.module}/out/${var.app_version}/compose.yml"
   content = templatefile(
-    "${path.module}/tpl/compose.yml.tftpl",
+    "${path.module}/tpl/${var.app_version}/compose.yml.tftpl",
     local.compose_vars
   )
 }
@@ -58,8 +58,8 @@ locals {
     app_object_key             = aws_s3_object.app.key
     compose_object_key         = aws_s3_object.compose.key
     nginx_object_key           = aws_s3_object.nginx.key
-    ssl_certificate_object_key = aws_s3_object.ssl_cert.key
-    ssl_private_key_object_key = aws_s3_object.ssl_private_key.key
+    ssl_certificate_object_key = var.letsencrypt_cert_is_ready ? "${var.dns_fqdn}/fullchain.pem" : aws_s3_object.ssl_cert.key
+    ssl_private_key_object_key = var.letsencrypt_cert_is_ready ? "${var.dns_fqdn}/privkey.pem" : aws_s3_object.ssl_cert.key
     # s3
   })
 }

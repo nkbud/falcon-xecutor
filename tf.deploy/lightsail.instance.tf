@@ -1,5 +1,9 @@
 data "aws_availability_zones" "available" {}
 
+locals {
+
+}
+
 resource "aws_lightsail_instance" "x" {
   name = "${var.app_name}-${var.app_version}"
   # name needs a version, since versions must co-exist

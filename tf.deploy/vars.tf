@@ -2,6 +2,10 @@
 # inputs
 #
 
+variable "letsencrypt_cert_is_ready" {
+  description = "See oioio-dev/lambda-certbot. You must already have certs in s3 for you domain."
+  default = true
+}
 variable "aws_region" {}
 variable "app_name" {}
 variable "app_version" {}

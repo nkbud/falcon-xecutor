@@ -23,7 +23,7 @@ locals {
 
 
 module "infra" {
-  source   = "./tf.infra"
+  source   = "./tf.base"
   app_name = local.app_name
 
   dns_domain = var.dns_domain
@@ -31,7 +31,6 @@ module "infra" {
 }
 # infra provisions the resources independent of app versions
 # that must persist across upgrades
-
 
 module "v0" {
   source             = "./tf.deploy"
@@ -46,37 +45,32 @@ module "v0" {
   iam_access_key     = module.infra.iam_access_key
   iam_secret_key     = module.infra.iam_secret_key
 }
-#module "v1" {
-#  source             = "./tf.deploy"
-#  app_name           = local.app_name
-#  app_version        = "v1"
-#  aws_region         = var.aws_region
-#  bucket_name        = module.infra.bucket_name
-#  dns_fqdn           = module.infra.dns_fqdn
-#  falconx_api_key    = var.falconx_api_key
-#  falconx_passphrase = var.falconx_passphrase
-#  falconx_secret_key = var.falconx_secret_key
-#}
-# versioned modules allow (old, new) instances to co-exist
-# by health-checking the (new) instance before re-routing our app traffic
-# we allow a "zero-downtime upgrade". see tf.md, "Upgrades"
-
 
 module "upgrade" {
-  source                 = "./tf.upgrade"
+  source = "./tf.upgrade"
   app_instance_name      = module.v0.app_instance_name
   app_instance_public_ip = module.v0.app_public_ip
   app_static_ip_name     = module.infra.app_static_ip_name
 }
-# see tf.md, "Upgrades"
+# this is the currently active deployment
 
 
-#module "certbot" {
-#  source = "./certbot"
-#}
-# certbot is a stage 2 upgrade
-# where tls.cert.tf pushes a self-signed cert to s3
-# certbot will rotate a real letsencrypt cert in s3
+module "v1" {
+  source             = "./tf.deploy"
+  app_name           = local.app_name
+  app_version        = "v1"
+  aws_region         = var.aws_region
+  bucket_name        = module.infra.bucket_name
+  dns_fqdn           = module.infra.dns_fqdn
+  falconx_api_key    = var.falconx_api_key
+  falconx_passphrase = var.falconx_passphrase
+  falconx_secret_key = var.falconx_secret_key
+  iam_access_key     = module.infra.iam_access_key
+  iam_secret_key     = module.infra.iam_secret_key
+}
+# versioned modules allow (old, new) instances to co-exist
+# by health-checking the (new) instance before re-routing our app traffic
+# we allow a "zero-downtime upgrade". see tf.md, "Upgrades"
 
 #module "newrelic" {
 #
