@@ -14,68 +14,59 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region = local.aws_region
 }
 
 locals {
-  app_name = "falcon-xecutor"
+  aws_region = "us-east-1"
+  app_name   = "falcon-xecutor"
 }
-
 
 module "infra" {
   source   = "./tf.base"
   app_name = local.app_name
-
   dns_domain = var.dns_domain
   dns_record = var.dns_record
 }
-# infra provisions the resources independent of app versions
-# that must persist across upgrades
+# the resources independent of app versions
 
-module "v0" {
+
+locals {
+  ordered_versions = split(",", var.deploy)
+  old_version = local.ordered_versions[0]
+  new_version = reverse(local.ordered_versions)[0]
+  # try to make the newest version the active recipient of traffic. i.e. ['v0', 'v1'] --> 'v1'
+}
+
+module "app" {
+  for_each           = toset(local.ordered_versions)
   source             = "./tf.deploy"
   app_name           = local.app_name
-  app_version        = "v0"
-  aws_region         = var.aws_region
+  app_version        = each.key
+
+  aws_region         = local.aws_region
   bucket_name        = module.infra.bucket_name
   dns_fqdn           = module.infra.dns_fqdn
+  iam_access_key     = module.infra.iam_access_key
+  iam_secret_key     = module.infra.iam_secret_key
+
   falconx_api_key    = var.falconx_api_key
   falconx_passphrase = var.falconx_passphrase
   falconx_secret_key = var.falconx_secret_key
-  iam_access_key     = module.infra.iam_access_key
-  iam_secret_key     = module.infra.iam_secret_key
 }
 
 module "upgrade" {
   source = "./tf.upgrade"
-  app_instance_name      = module.v0.app_instance_name
-  app_instance_public_ip = module.v0.app_public_ip
-  app_static_ip_name     = module.infra.app_static_ip_name
+  lightsail_static_ip_name = module.infra.app_static_ip_name
+  lightsail_instance_name  = module.app[local.new_version].app_instance_name
+  healthcheck_public_ip    = module.app[local.new_version].app_public_ip
 }
-# this is the currently active deployment
+# this switches traffic over to the 'active version' of the app
+# it includes a healthcheck that can fail the deployment
+# protecting us from entering a bad state
 
-
-module "v1" {
-  source             = "./tf.deploy"
-  app_name           = local.app_name
-  app_version        = "v1"
-  aws_region         = var.aws_region
-  bucket_name        = module.infra.bucket_name
-  dns_fqdn           = module.infra.dns_fqdn
-  falconx_api_key    = var.falconx_api_key
-  falconx_passphrase = var.falconx_passphrase
-  falconx_secret_key = var.falconx_secret_key
-  iam_access_key     = module.infra.iam_access_key
-  iam_secret_key     = module.infra.iam_secret_key
+# should have a way to say what is the "active" instance
+# ...
+output "currently_active_instance" {
+  value = module.upgrade.healthcheck_passed ? local.new_version : local.old_version
 }
-# versioned modules allow (old, new) instances to co-exist
-# by health-checking the (new) instance before re-routing our app traffic
-# we allow a "zero-downtime upgrade". see tf.md, "Upgrades"
-
-#module "newrelic" {
-#
-#}
-# https://registry.terraform.io/providers/newrelic/newrelic/latest/docs
-# newrelic is a stage 3 upgrade
-# where currently we have to ssh to inspect the various server / logs
-# newrelic will allow us to aggregate + inspect the server's logs without ssh
