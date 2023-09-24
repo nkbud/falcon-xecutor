@@ -23,9 +23,20 @@ resource "local_sensitive_file" "compose" {
   )
 }
 
+resource "local_sensitive_file" "newrelic" {
+  filename = "${path.module}/out/${var.app_version}/newrelic-infra.yml"
+  content = templatefile(
+    "${path.module}/tpl/${var.app_version}/newrelic-infra.yml.tftpl",
+    local.newrelic_vars
+  )
+}
+
 locals {
   user_dir = "/home/ubuntu"
 
+  newrelic_vars = {
+    newrelic_license_key = var.newrelic_license_key
+  }
   nginx_vars = {
     app_port                         = 1000
     server_name                      = var.dns_fqdn
@@ -34,6 +45,7 @@ locals {
     path_to_app_zip_on_host          = "${local.user_dir}/app.zip"
     path_to_app_dir_on_host          = "${local.user_dir}/app"
     path_to_compose_on_host          = "${local.user_dir}/compose.yml"
+    path_to_newrelic_on_host         = "${local.user_dir}/newrelic.yml"
   }
 
   compose_vars = merge(local.nginx_vars, {
@@ -58,6 +70,7 @@ locals {
     app_object_key             = aws_s3_object.app.key
     compose_object_key         = aws_s3_object.compose.key
     nginx_object_key           = aws_s3_object.nginx.key
+    newrelic_object_key        = aws_s3_object.newrelic.key
     ssl_certificate_object_key = var.letsencrypt_cert_is_ready ? "${var.dns_fqdn}/fullchain.pem" : aws_s3_object.ssl_cert.key
     ssl_private_key_object_key = var.letsencrypt_cert_is_ready ? "${var.dns_fqdn}/privkey.pem" : aws_s3_object.ssl_cert.key
     # s3

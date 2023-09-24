@@ -2,7 +2,10 @@ version: '3.4'
 services:
 
   app:
-    build: ${path_to_app_dir_on_host}
+    container_name: app
+    build:
+      context: ${path_to_app_dir_on_host}
+      dockerfile: app.dockerfile
     ports:
       - ${app_port}:${app_port}
     environment:
@@ -17,6 +20,7 @@ services:
       retries: 20
 
   nginx:
+    container_name: nginx
     image: nginx:1.21-alpine
     volumes:
       - ${path_to_nginx_on_host}:/etc/nginx/conf.d/default.conf
@@ -27,3 +31,18 @@ services:
     depends_on:
       app:
         condition: service_healthy
+
+  newrelic:
+    container_name: newrelic
+    build:
+      context: ${path_to_app_dir_on_host}
+      dockerfile: newrelic.dockerfile
+    cap_add:
+      - SYS_PTRACE
+    network_mode: bridge
+    pid: host
+    privileged: true
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: unless-stopped

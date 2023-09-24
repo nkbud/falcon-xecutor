@@ -60,11 +60,18 @@ sudo -u ubuntu \
   --key ${nginx_object_key} \
   ${path_to_nginx_on_host}
 
+sudo -u ubuntu \
+  aws s3api get-object \
+  --bucket ${bucket_name} \
+  --key ${newrelic_object_key} \
+  ${path_to_newrelic_on_host}
+
 #
-# unzip app
+# unzip app, mv other stuff in
 #
 
 unzip ${path_to_app_zip_on_host} -d ${path_to_app_dir_on_host}/
+mv ${path_to_newrelic_on_host} ${path_to_app_dir_on_host}/newrelic.yml
 
 #
 # docker compose

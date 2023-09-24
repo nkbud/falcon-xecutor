@@ -27,6 +27,10 @@ variable "iam_secret_key" {
   sensitive = true
 }
 
+variable "newrelic_license_key" {
+  sensitive = true
+}
+
 #
 # outputs
 #

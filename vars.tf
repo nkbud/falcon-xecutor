@@ -2,22 +2,23 @@
 # inputs
 #
 
-variable "deploy" {
-  validation {
-    condition = contains([
-      "blue",        # 1 instance, using 'blue' templates.
-      "green",       #                   'green'
-      "blue,green",  # 2 instances, attempt to transfer traffic from 'blue' to 'green' instance
-      "green,blue"   #                                               'green' to 'blue'
-    ], var.deploy)
-    error_message = "We only support blue / green deployments. Choose one."
-  }
+variable "prod" {
+  default     = null
   description = <<-EOT
     Options:
     - blue
     - green
-    - blue,green
-    - green,blue
+    - (null)
+    EOT
+}
+
+variable "dev" {
+  default     = null
+  description = <<-EOT
+    Options:
+    - blue
+    - green
+    - (null)
     EOT
 }
 
