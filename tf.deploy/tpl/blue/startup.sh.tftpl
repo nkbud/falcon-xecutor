@@ -5,8 +5,8 @@ set -e
 # install dependencies
 #
 
-time sudo apt-get update
-time sudo apt install docker.io docker-compose unzip -y
+sudo apt-get update
+sudo apt install docker.io docker-compose unzip -y
 sudo snap install aws-cli --classic
 
 #
@@ -71,13 +71,76 @@ sudo -u ubuntu \
 #
 
 unzip ${path_to_app_zip_on_host} -d ${path_to_app_dir_on_host}/
-mv ${path_to_newrelic_on_host} ${path_to_app_dir_on_host}/newrelic.yml
+mv ${path_to_newrelic_on_host} /etc/newrelic-infra.yml
+
+#
+# install newrelic after getting config file into place
+#
+
+curl -Ls https://download.newrelic.com/install/newrelic-cli/scripts/install.sh | bash && sudo \
+  NEW_RELIC_API_KEY=${newrelic_api_key} \
+  NEW_RELIC_ACCOUNT_ID=${newrelic_account_id} \
+  /usr/local/bin/newrelic install
+# https://docs.newrelic.com/docs/new-relic-solutions/get-started/networks/
+# https://docs.newrelic.com/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/#tarball-install
+
+mkdir -p /etc/newrelic-infra/logging.d
+cat << EOF > /etc/newrelic-infra/logging.d/logging.yml
+logs:
+  - name: cloud-init-output.log
+    file: /var/log/cloud-init-output.log
+    attributes:
+      name: cloud-init-output
+      logtype: linux_cloud-init
+  - name: auth.log
+    file: /var/log/auth.log
+    attributes:
+      name: auth
+      logtype: linux_auth
+  - name: newrelic-cli.log
+    file: /root/.newrelic/newrelic-cli.log
+    attributes:
+      name: newrelic
+      newrelic-cli: true
+      logtype: newrelic-cli
+EOF
 
 #
 # docker compose
 #
 
-cd $(dirname ${path_to_compose_on_host}) && sudo docker-compose up
+cd $(dirname ${path_to_compose_on_host}) && sudo docker-compose up -d
 
-# change any part of this script to trigger a redeploy, i.e.
-echo "e"
+#
+# metadata-assisted container logging
+#
+
+
+wait_for_container() {
+    local container_name="$1"
+    while true; do
+        local status=$(sudo docker ps --filter "name=$container_name" --format "{{.Status}}" | grep "Up")
+        if [ ! -z "$status" ]; then
+            break
+        fi
+        echo "Waiting for $container_name to be up..."
+        sleep 5
+    done
+}
+wait_for_container "app"
+wait_for_container "nginx"
+
+CONTAINER_ID_APP=$(sudo docker ps -qf "name=app")
+CONTAINER_ID_NGINX=$(sudo docker ps -qf "name=nginx")
+
+cat << EOF >> /etc/newrelic-infra/logging.d/logging.yml
+  - name: app.log
+    file: /var/lib/docker/containers/$CONTAINER_ID_APP*/*.log
+    attributes:
+      name: app
+  - name: nginx.log
+    file: /var/lib/docker/containers/$CONTAINER_ID_NGINX*/*.log
+    attributes:
+      name: nginx
+      logtype: nginx
+EOF

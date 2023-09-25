@@ -55,6 +55,8 @@ module "app" {
   falconx_secret_key = var.falconx_secret_key
 
   newrelic_license_key = var.new_relic_license_key
+  newrelic_api_key = var.new_relic_api_key
+  newrelic_account_id = var.new_relic_account_id
 }
 
 module "upgrade" {

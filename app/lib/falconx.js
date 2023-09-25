@@ -7,8 +7,9 @@
  * @param {string} quoteToken - The ID of the quote token.
  * @param {number} baseTokenAmount - The amount of base token to execute.
  * @param {number} quoteTokenPrice - The price of the quote token that we're aiming for.
- * @param {boolean} [doExecute=true] - If false, we will only debug-print the quote info. Default true, place the order.
+ * @param {boolean} [doExecute=false] - If false, we will only debug-print the quote info. If false, place the order.
  * @param {number} [quotePriceTolerance=0.0001] - The maximum amount of price discrepancy we'll allow between (expected, quoted)
+ * @param {boolean} [recordMetrics=false] - If true, we will send events / metrics to NewRelic via the API
  */
 async function getAndExecuteQuote(
     falconxClient,
@@ -18,7 +19,8 @@ async function getAndExecuteQuote(
     baseTokenAmount,
     quoteTokenPrice,
     doExecute = false,
-    quotePriceTolerance = 0.0001
+    quotePriceTolerance = 0.0001,
+    recordMetrics = false
 ) {
   if (typeof falconxClient !== 'object' || !falconxClient) {
     return `falconxClient should be an object: ${falconxClient}`;

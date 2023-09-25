@@ -13,6 +13,10 @@ services:
       - FALCONX_API_KEY=${falconx_api_key}
       - FALCONX_SECRET_KEY=${falconx_secret_key}
       - FALCONX_PASSPHRASE=${falconx_passphrase}
+      - NEW_RELIC_LICENSE_KEY=${newrelic_license_key}
+      - NEW_RELIC_APP_NAME=falcon-xecutor-blue
+      - NEW_RELIC_DISPLAY_NAME=falcon-xecutor-blue
+      - NEW_RELIC_LOG_LEVEL=info
     healthcheck:
       test: [ "CMD", "wget", "--spider", "--quiet", "http://localhost:${app_port}/health" ]
       interval: 3s
@@ -31,18 +35,3 @@ services:
     depends_on:
       app:
         condition: service_healthy
-
-  newrelic:
-    container_name: newrelic
-    build:
-      context: ${path_to_app_dir_on_host}
-      dockerfile: newrelic.dockerfile
-    cap_add:
-      - SYS_PTRACE
-    network_mode: bridge
-    pid: host
-    privileged: true
-    volumes:
-      - "/:/host:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    restart: unless-stopped

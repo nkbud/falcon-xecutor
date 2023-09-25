@@ -1,7 +1,0 @@
-logs:
-  - name: container-logs
-    file: /host/var/lib/docker/containers/*/*.log
-  - name: init-logs
-    file: /host/var/log/cloud-init-output.log
-
-

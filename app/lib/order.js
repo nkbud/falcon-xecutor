@@ -40,7 +40,7 @@ class FalconxOrder {
  * @param {string} text - The text to parse an order from
  * @return {FalconxOrder | string} - The parsed order, or an error message.
  */
-function parseOrder(text) {
+function order(text) {
 
     // HAS AT LEAST 3 LINES
     const lines = text.split(/\r?\n/);
@@ -88,6 +88,6 @@ function parseOrder(text) {
 }
 
 module.exports = {
-    parseOrder,
+    parseOrder: order,
     FalconxOrder
  }

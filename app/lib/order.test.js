@@ -1,4 +1,4 @@
-const {parseOrder, FalconxOrder} = require('./parseOrder');
+const {parseOrder, FalconxOrder} = require('./order');
 const {expect, test, describe} = require('@jest/globals');
 
 /**

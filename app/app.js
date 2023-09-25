@@ -9,7 +9,7 @@ app.use(express.text());
 
 // custom helper functions
 const {authenticate, getSignaturePath} = require('./lib/auth')
-const {parseOrder, FalconxOrder} = require('./lib/parseOrder')
+const {parseOrder, FalconxOrder} = require('./lib/order')
 const {getAndExecuteQuote} = require('./lib/falconx')
 
 // a real falconx client
@@ -20,18 +20,23 @@ const fxClient = new FalconxClient(
     process.env.FALCONX_PASSPHRASE
 );
 
+//
 // GET
+//
+
 app.get("/health", (req, res) => {
     return res.send("OK");
 });
 
+app.use('/img', express.static(path.join(__dirname, 'img')));
 app.get('/', (req, res) => {
     res.sendFile(getSignaturePath());
 });
 
-app.use('/img', express.static(path.join(__dirname, 'img')));
-
+//
 // POST
+//
+
 const nginxIpAddrHeader = 'X-Real-IP';
 app.post('/', async (req, res) => {
     try {
@@ -76,6 +81,10 @@ app.post('/', async (req, res) => {
     console.log("Request success.")
     return res.status(200).send();
 });
+
+//
+// run()
+//
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
