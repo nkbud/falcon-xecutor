@@ -57,13 +57,3 @@ data "archive_file" "app" {
     "lib/*.test.js"
   ])
 }
-
-#
-# newrelic
-#
-
-resource "aws_s3_object" "newrelic" {
-  bucket = var.bucket_name
-  key = "${var.app_version}/newrelic.yml"
-  content = local_sensitive_file.newrelic.content
-}

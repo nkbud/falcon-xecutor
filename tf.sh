@@ -2,7 +2,7 @@
 set -e
 
 VALID_COMMANDS="[plan|apply]"
-VALID_ARGS="[blue|green|teal|~green|~blue|@green|@blue]"
+VALID_ARGS="[blue|green|teal|~green|~blue|@green|@blue|!blue|!green|\$blue|\$green]"
 
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 $VALID_COMMANDS $VALID_ARGS"
@@ -96,6 +96,39 @@ case $ARG in
           -var "dev=green" \
           -target module.app
         ;;
+
+    # Use this:
+    # when you're wanting to force replace your only active instance
+
+    !blue)
+        echo "$COMMAND refresh only blue" && echo "If blue is active, please call '->green' first." && wait_5_seconds
+        terraform taint module.app[\"blue\"].aws_s3_object.app
+        terraform taint module.app[\"blue\"].aws_lightsail_instance.x
+        terraform $COMMAND \
+          -var "prod=blue" \
+          -target module.app
+        ;;
+    !green)
+        echo "$COMMAND refresh only green" && echo "If green is active, please call '->blue' first." && wait_5_seconds
+        terraform taint module.app[\"green\"].aws_s3_object.app
+        terraform taint module.app[\"green\"].aws_lightsail_instance.x
+        terraform $COMMAND \
+          -var "prod=green" \
+          -target module.app
+        ;;
+
+    #
+    # Use this to destroy a certain color
+    #
+    $blue)
+        echo "$COMMAND delete blue" && echo "If blue is active, please call '->green' first." && wait_5_seconds
+        terraform destroy -target module.app[\"blue\"].aws_lightsail_instance.x
+        ;;
+    $green)
+        echo "$COMMAND delete green" && echo "If green is active, please call '->blue' first." && wait_5_seconds
+        terraform destroy -target module.app[\"green\"].aws_lightsail_instance.x
+        ;;
+
 
     # Use this:
     # - when you're done developing the inactive instance
