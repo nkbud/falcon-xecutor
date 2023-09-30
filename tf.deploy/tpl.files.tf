@@ -23,14 +23,6 @@ resource "local_sensitive_file" "compose" {
   )
 }
 
-resource "local_sensitive_file" "newrelic" {
-  filename = "${path.module}/out/${var.app_version}/newrelic-infra.yml"
-  content = templatefile(
-    "${path.module}/tpl/${var.app_version}/newrelic-infra.yml.tftpl",
-    local.newrelic_vars
-  )
-}
-
 locals {
   user_dir = "/home/ubuntu"
 
@@ -72,7 +64,6 @@ locals {
     app_object_key             = aws_s3_object.app.key
     compose_object_key         = aws_s3_object.compose.key
     nginx_object_key           = aws_s3_object.nginx.key
-    newrelic_object_key        = aws_s3_object.newrelic.key
     ssl_certificate_object_key = var.letsencrypt_cert_is_ready ? "${var.dns_fqdn}/fullchain.pem" : aws_s3_object.ssl_cert.key
     ssl_private_key_object_key = var.letsencrypt_cert_is_ready ? "${var.dns_fqdn}/privkey.pem" : aws_s3_object.ssl_cert.key
     # s3

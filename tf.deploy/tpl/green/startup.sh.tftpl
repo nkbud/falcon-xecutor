@@ -5,8 +5,8 @@ set -e
 # install dependencies
 #
 
-time sudo apt-get update
-time sudo apt install docker.io docker-compose unzip -y
+sudo apt-get update
+sudo apt install docker.io docker-compose unzip -y
 sudo snap install aws-cli --classic
 
 #
@@ -70,7 +70,4 @@ unzip ${path_to_app_zip_on_host} -d ${path_to_app_dir_on_host}/
 # docker compose
 #
 
-cd $(dirname ${path_to_compose_on_host}) && sudo docker-compose up
-
-# change any part of this script to trigger a redeploy, i.e.
-echo "e"
+cd $(dirname ${path_to_compose_on_host}) && sudo docker-compose up -d

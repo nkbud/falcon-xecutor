@@ -1,5 +1,5 @@
 const path = require('path');
-const fs= require('fs');
+const fs = require('fs');
 
 // we check to see if the request came from these ip addresses:
 const allowedIpAddrs = [
@@ -15,12 +15,15 @@ const allowedIpAddrs = [
 // and ends with the signature
 const signatureFilePath = path.join(__dirname, 'index.html');
 const signature = fs.readFileSync(signatureFilePath, 'utf8');
+
 function getSignature() {
     return signature;
 }
+
 function getSignaturePath() {
     return signatureFilePath;
 }
+
 /**
  * Authenticates a request based on IP address and request body signature.
  *

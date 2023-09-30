@@ -1,20 +1,20 @@
-// exec: BUY
-// base: BTC 0.000123
-// quote: USD 30000.123
+// BUY
+// BTC 0.000123
+// USD 30000.123
 
-// exec: SELL
-// base: BTC 0.000123
-// quote: USD 30000.123
+// SELL
+// BTC 0.000123
+// USD 30000.123
 
 /**
- * @typedef FalconxOrder
+ * @typedef UserOrder
  * @property {string} buyOrSell
  * @property {string} baseToken
  * @property {string} quoteToken
  * @property {number} baseTokenAmount
  * @property {number} quoteTokenPrice
  */
-class FalconxOrder {
+class UserOrder {
     /**
      * @param {string} buyOrSell - Whether to buy or sell the base token.
      * @param {string} baseToken - The base token being bought or sold.
@@ -38,9 +38,9 @@ class FalconxOrder {
 
 /**
  * @param {string} text - The text to parse an order from
- * @return {FalconxOrder | string} - The parsed order, or an error message.
+ * @return {UserOrder | string} - The parsed order, or an error message.
  */
-function order(text) {
+function parseOrder(text) {
 
     // HAS AT LEAST 3 LINES
     const lines = text.split(/\r?\n/);
@@ -76,7 +76,7 @@ function order(text) {
     }
 
     // RETURN OBJECT
-    const order = new FalconxOrder(
+    const order = new UserOrder(
         buyOrSell,
         baseToken,
         quoteToken,
@@ -88,6 +88,6 @@ function order(text) {
 }
 
 module.exports = {
-    parseOrder: order,
-    FalconxOrder
- }
+    parseOrder: parseOrder,
+    UserOrder: UserOrder
+}

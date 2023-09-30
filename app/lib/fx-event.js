@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} FalconxEvent
+ * @typedef {Object} FxEvent
  * @property {string} eventType - The type of event.
  * @property {string} baseToken - The base token for the order.
  * @property {string} quoteToken - The quote token for the order.
@@ -31,25 +31,26 @@
  * @property {number} executeSlippageBps - The slippage in basis points during execution.
  * @property {number} executeSlippageUsd - The slippage in USD during execution.
  */
-class FalconxEvent {
+class FxEvent {
     /**
-     * @param {FalconxOrder} falconxOrder
-     * @param {FalconxResponse} fxQuote
-     * @param {FalconxResponse} fxExecute
+     * @param {UserOrder} userOrder
+     * @param {FxResponse} fxQuote
+     * @param {FxResponse | undefined} fxExecute
      */
     constructor(
-        falconxOrder,
+        userOrder,
         fxQuote,
         fxExecute
     ) {
-        this.eventType = `falcon-xecutor.${falconxOrder.buyOrSell}`
+        this.orderSide = userOrder.buyOrSell
+        this.eventType = `falcon_xecutor:${this.orderSide}`
         //
         // client's request
         //
-        this.baseToken = falconxOrder.baseToken
-        this.quoteToken = falconxOrder.quoteToken
-        this.baseAmount = falconxOrder.baseTokenAmount
-        this.quotePriceExpected = falconxOrder.quoteTokenPrice
+        this.baseToken = userOrder.baseToken
+        this.quoteToken = userOrder.quoteToken
+        this.baseAmount = userOrder.baseTokenAmount
+        this.quotePriceExpected = userOrder.quoteTokenPrice
         this.quoteAmountExpected = this.quotePriceExpected * this.baseAmount
         //
         // fxQuote
@@ -63,7 +64,7 @@ class FalconxEvent {
         //
         // error = (quote - request)
         //
-        switch (falconxOrder.buyOrSell) {
+        switch (userOrder.buyOrSell) {
             case "BUY":
                 this.quotePriceReceived = fxQuote.buy_price
                 this.quoteAmountReceived = fxQuote.position_out.value
@@ -82,7 +83,7 @@ class FalconxEvent {
         //
         this.quoteAmountGain = 0
         this.quoteAmountLoss = 0
-        switch (falconxOrder.buyOrSell) {
+        switch (userOrder.buyOrSell) {
             case "BUY":
                 if (this.quoteAmountError > 0) {
                     this.quoteAmountLoss = this.quoteAmountError
@@ -106,31 +107,40 @@ class FalconxEvent {
         this.netFeeBps = fxQuote.fee_bps
         this.netFeeUsd = fxQuote.fee_usd
         //
-        // fxExecute
+        // fxExecute (optional)
         //
-        this.executeFilled = fxExecute.is_filled
-        this.executeStatus = fxExecute.status === null ? "" : fxExecute.status
-        this.executeError = fxExecute.error === null ? "" : fxExecute.error
-        //
-        // (execute - quote) time difference
-        //
+        this.executeFilled = false
+        this.executeStatus = "ONLY_QUOTE"
+        this.executeError = ""
         this.executeTimeDiffMs = 0
-        try {
-            const executeTime = new Date(fxExecute.t_execute)
-            const quoteTime = new Date(fxQuote.t_quote)
-            this.executeTimeDiffMs = new Date(fxExecute.t_execute) - new Date(fxQuote.t_quote);
-        } catch (e) {}
+        this.executeSlippageBps = 0
+        this.executeSlippageUsd = 0
         //
-        // any slippage?
-        //
-        this.executeSlippageBps = fxExecute.slippage_bps === null ? 0 : fxExecute.slippage_bps
-        this.executeSlippageUsd = this.quoteAmountReceived * (this.executeSlippageBps / 10000)
+        if (fxExecute) {
+            this.executeFilled = fxExecute.is_filled
+            this.executeStatus = fxExecute.status === null ? "" : fxExecute.status
+            this.executeError = fxExecute.error === null ? "" : fxExecute.error
+            //
+            // (execute - quote) time difference
+            //
+            try {
+                const executeTime = new Date(fxExecute.t_execute)
+                const quoteTime = new Date(fxQuote.t_quote)
+                this.executeTimeDiffMs = executeTime - quoteTime
+            } catch (e) {
+            }
+            //
+            // any slippage?
+            //
+            this.executeSlippageBps = fxExecute.slippage_bps === null ? 0 : fxExecute.slippage_bps
+            this.executeSlippageUsd = this.quoteAmountReceived * (this.executeSlippageBps / 10000)
+        }
     }
 
-    /** @returns FalconxEvent */
+    /** @returns FxEvent */
     toJson() {
         return {
-            "eventType": this.eventType,
+            "orderSide": this.orderSide,
             "baseToken": this.baseToken,
             "quoteToken": this.quoteToken,
             "baseAmount": this.baseAmount,
@@ -164,3 +174,6 @@ class FalconxEvent {
     }
 }
 
+module.exports = {
+    FxEvent: FxEvent
+}

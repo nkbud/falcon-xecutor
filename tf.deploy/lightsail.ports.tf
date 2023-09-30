@@ -9,7 +9,4 @@ resource "aws_lightsail_instance_public_ports" "x" {
     cidrs             = ["0.0.0.0/0"]
     ipv6_cidrs        = ["::/0"]
   }
-  lifecycle {
-    ignore_changes = [port_info]
-  }
 }

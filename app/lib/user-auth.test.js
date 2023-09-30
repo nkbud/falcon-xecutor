@@ -1,4 +1,4 @@
-const {authenticate, getSignature} = require('./auth');
+const {authenticate, getSignature} = require('./user-auth');
 const {describe, expect, test} = require('@jest/globals');
 
 describe('authenticate function', () => {

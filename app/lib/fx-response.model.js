@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} FalconxResponse
+ * @typedef {Object} FxResponse
  * @property {?string} buy_price
  * @property {?string} client_order_id
  * @property {?string} client_order_uuid

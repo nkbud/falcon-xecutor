@@ -11,9 +11,18 @@
   "is_filled": false,
   "order_type": "rfq",
   "platform": "api",
-  "position_in": { "token": "USD", "value": "2.61531" },
-  "position_out": { "token": "BTC", "value": "0.0001" },
-  "quantity_requested": { "token": "BTC", "value": "0.0001" },
+  "position_in": {
+    "token": "USD",
+    "value": "2.61531"
+  },
+  "position_out": {
+    "token": "BTC",
+    "value": "0.0001"
+  },
+  "quantity_requested": {
+    "token": "BTC",
+    "value": "0.0001"
+  },
   "rebate_bps": 15,
   "rebate_usd": 0.003922965,
   "sell_price": "26153.1",
@@ -24,7 +33,10 @@
   "t_execute": null,
   "t_expiry": "2023-09-25T02:49:19.306583+00:00",
   "t_quote": "2023-09-25T02:49:17.306553+00:00",
-  "token_pair": { "base_token": "BTC", "quote_token": "USD" },
+  "token_pair": {
+    "base_token": "BTC",
+    "quote_token": "USD"
+  },
   "trader_email": "oscar@pantheonfinancial.com",
   "warnings": []
 }

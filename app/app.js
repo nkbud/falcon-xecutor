@@ -1,3 +1,5 @@
+const newrelicClient = require("newrelic");
+
 // a server
 const path = require('path');
 const express = require('express');
@@ -8,9 +10,9 @@ const PORT = 1000;
 app.use(express.text());
 
 // custom helper functions
-const {authenticate, getSignaturePath} = require('./lib/auth')
-const {parseOrder, FalconxOrder} = require('./lib/order')
-const {getAndExecuteQuote} = require('./lib/falconx')
+const {authenticate, getSignaturePath} = require('./lib/user-auth')
+const {parseOrder, UserOrder} = require('./lib/user-order')
+const {getAndExecuteQuote} = require('./lib/fx-client')
 
 // a real falconx client
 const FalconxClient = require('falconx-node')
@@ -53,23 +55,19 @@ app.post('/', async (req, res) => {
 
         // Parse request
         const parsedOrder = parseOrder(reqBody)
-        if (!(parsedOrder instanceof FalconxOrder)) {
+        if (!(parsedOrder instanceof UserOrder)) {
             console.error(`Error parsing the request body: ${parsedOrder}`);
             return res.status(400).send()
         }
 
         // Get and execute a quote:
-        const falconxError = await getAndExecuteQuote(
+        const fxErrorMessage = await getAndExecuteQuote(
             fxClient,
-            parsedOrder.buyOrSell,
-            parsedOrder.baseToken,
-            parsedOrder.quoteToken,
-            parsedOrder.baseTokenAmount,
-            parsedOrder.quoteTokenPrice,
+            parsedOrder,
             false,
         );
-        if (falconxError) {
-            console.error(falconxError);
+        if (fxErrorMessage) {
+            console.error(fxErrorMessage);
             return res.status(500).send();
         }
 
@@ -88,5 +86,15 @@ app.post('/', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+    console.error('There was an uncaught error', err);
 });
 
